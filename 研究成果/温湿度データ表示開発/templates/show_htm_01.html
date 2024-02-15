@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="ja">
+    <head>
+        <meta charset="utf-8">
+        <title>DHT11とBME280による温度・湿度データ取得(IoTデバイスプログラミングIII)</title>
+        <link rel="stylesheet" href="/static/css/style.css">
+    </head>
+
+    <body>
+        <h2>DHT11とBME280による温度・湿度データ取得</h2>
+        【入力フォーム】<br>
+        「送信」ボタンを押すと，温度，湿度のデータが表に追記されます．<br>
+        <h3>DHT11用</h3>
+        <div class="center">
+        <form action='/add_data_for_dht11'>
+            <br><br>
+            温度：<input type="text" pattern="^([1-9]\d*|0)(\.\d+)?$" name="dht11_tempefield" value="25">
+            <br>
+            湿度：<input type="text" pattern="^([1-9]\d*|0)(\.\d+)?$" name="dht11_humidfield" value="60">
+            <br><br>
+            <button type="submit" formmethod="POST">DHT11データ送信</button>
+        </form>
+        </div>
+
+        <h3>BME280用</h3>
+        <div class="center">
+        <form action='/add_data_for_bme280'>
+            <br><br>
+            温度：<input type="text" pattern="^([1-9]\d*|0)(\.\d+)?$" name="bme280_tempefield" value="25">
+            <br>
+            湿度：<input type="text" pattern="^([1-9]\d*|0)(\.\d+)?$" name="bme280_humidfield" value="60">
+            <br><br>
+            <button type="submit" formmethod="POST">BME280データ送信</button>
+        </form>
+        </div>
+
+        <hr style="height:1px;width:100%;">
+
+        <br>
+        【温度・湿度データの確認】<br>
+        「確認」ボタンを押すと，DHT11の温度・湿度データを確認できます．
+
+        <div class="btn-container">
+            <br>
+            {# 「確認」ボタンを配置 #}
+            <button id="btn">確認</button>
+            <br><br>
+
+            {#################### DHT11用の表 ####################}
+            {# クリックで表示させるテキストにはhiddenクラスを付ける #}
+            <table align="center" border="1" id="table1" class="hidden">
+            {# 表のキャプション追加 #}
+            <caption>DHT11の温度・湿度データ</caption>
+                <tr>
+                    <td>温度(℃)</td>
+                    <td>湿度(%)</td>
+                </tr>
+                    {% for value in dht11_data %}
+                <tr>
+                    <td>{{ value[0] }}</td>
+                    <td>{{ value[1] }}</td>
+                </tr>
+                    {% endfor %}
+            </table>
+
+            <br>
+            {# <p id="text1" class="hidden">【JavaScript part in HTML】</p> #}
+
+            {# pythonから送られたデータをjsで用いるために,json形式に変換し，jsのグローバル変数（global_values）に設定 #}
+            <script>
+                let global_values_for_dht11 =  {{ dht11_data | tojson }};
+            </script>
+
+            {# クリックで表示させるテキストにはhiddenクラスを付ける #}
+            <p id="text2" class="hidden">平均温度： <span id="ave_tempe_dht11"></span>℃</p>
+            <p id="text3" class="hidden">平均湿度： <span id="ave_humid_dht11"></span>%</p>
+            <p id="text4" class="hidden">データ数： <span id="number_of_data_dht11"></span></p>
+
+            <hr id="line1" class="hidden">
+
+            {#################### BME280用の表 ####################}
+            {# クリックで表示させるテキストにはhiddenクラスを付ける #}
+            <table align="center" border="1" id="table2" class="hidden">
+            {# 表のキャプション追加 #}
+            <caption>BME280の温度・湿度データ</caption>
+                <tr>
+                    <td>温度(℃)</td>
+                    <td>湿度(%)</td>
+                </tr>
+                    {% for value in bme280_data %}
+                <tr>
+                    <td>{{ value[0] }}</td>
+                    <td>{{ value[1] }}</td>
+                </tr>
+                    {% endfor %}
+            </table>
+
+            <br>
+            {# <p id="text1" class="hidden">【JavaScript part in HTML】</p> #}
+
+            {# pythonから送られたデータをjsで用いるために,json形式に変換し，jsのグローバル変数（global_values）に設定 #}
+            <script>
+                let global_values_for_bme280 =  {{ bme280_data | tojson }};
+            </script>
+
+            {# クリックで表示させるテキストにはhiddenクラスを付ける #}
+            <p id="text5" class="hidden">平均温度： <span id="ave_tempe_bme280"></span>℃</p>
+            <p id="text6" class="hidden">平均湿度： <span id="ave_humid_bme280"></span>%</p>
+            <p id="text7" class="hidden">データ数： <span id="number_of_data_bme280"></span></p>
+        </div>
+
+            <script src="{{ url_for('static', filename='js/show_js_s01.js') }}"></script>
+    </body>
+</html>
